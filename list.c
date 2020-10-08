@@ -7,10 +7,49 @@ struct node {
   int value;
 };
 
-typedef struct node Node;
+typedef struct node t_node;
 
-void addNode(Node *first, int value) {
-  Node *n = malloc(sizeof(Node));
+struct list {
+  t_node *head;
+};
+
+typedef struct list t_list;
+
+t_list *create_list() {
+  t_list *list = malloc(sizeof(t_list));
+  return list;
+}
+
+t_node *create_node() {
+  t_node *node = malloc(sizeof(t_node));
+  node->proximo = NULL;
+  node->anterior = NULL;
+  return node;
+}
+
+/*
+t_node *init_node(int value) {
+  t_node *node = malloc(sizeof(t_node));
+  node->value = value;
+  node->next = NULL;
+  node->previous = NULL;
+*/
+
+void insert_to_head(t_list list, int value) {
+  t_node *node = create_node();
+  node->value = value;
+  node->proximo = list->first;
+  node->anterior = list->last;
+
+  list->first->anterior = node;
+  list->last->proximo = node;
+
+  list->first = node;
+}
+
+
+void addNode(t_node *first, int value) {
+  t_node *n = malloc(sizeof(t_node));
   n->value = value;
   
   n->proximo = first;
@@ -20,8 +59,8 @@ void addNode(Node *first, int value) {
   n->anterior->proximo = n;
 }
 
-void removeNode(Node *first, int value) {
-  Node *i = first;
+void removeNode(t_node *first, int value) {
+  t_node *i = first;
 
   while (i->value != value) {
     i = i->proximo;
@@ -32,8 +71,8 @@ void removeNode(Node *first, int value) {
   free(i);
 }
 
-void showAll(Node *first) {
-  Node *i = first;
+void showAll(t_node *first) {
+  t_node *i = first;
 
   while (i != first->anterior) {
     printf("%d, ", i->value);
@@ -44,10 +83,10 @@ void showAll(Node *first) {
 }
 
 int main() {
-  Node *n1 = malloc(sizeof(Node));
+  t_node *n1 = malloc(sizeof(t_node));
   n1->value = 1;
 
-  Node *n2 = malloc(sizeof(Node));
+  t_node *n2 = malloc(sizeof(t_node));
   n2->value = 4;
 
   n1->proximo = n2;
