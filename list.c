@@ -1,43 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct node {
-  struct node *anterior;
-  struct node *proximo;
+// essa lista é circular ou não? o que isso implica?
+
+struct s_node {
+  struct s_node *next;
+  struct s_node *previous;
   int value;
 };
 
-typedef struct node t_node;
+typedef struct s_node t_node;
 
-struct list {
-  t_node *head;
+struct s_list {
+  t_node* first;
 };
 
-typedef struct list t_list;
+typedef struct s_list t_list;
 
-t_list *create_list() {
-  t_list *list = malloc(sizeof(t_list));
+// create_empty_list() and create_list(int* array);
+t_list* create_empty_list() {
+  t_list* list = malloc(sizeof(t_list));
+  list->first = NULL;
+  
   return list;
 }
 
-t_node *create_node() {
-  t_node *node = malloc(sizeof(t_node));
-  node->proximo = NULL;
-  node->anterior = NULL;
+t_node* create_node(int value) {
+  t_node* node = malloc(sizeof(t_node));
+  node->next = NULL;
+  node->previous = NULL;
+  node->value = value;
+  
   return node;
 }
 
-/*
-t_node *init_node(int value) {
-  t_node *node = malloc(sizeof(t_node));
-  node->value = value;
-  node->next = NULL;
-  node->previous = NULL;
-*/
-
-void insert_to_head(t_list list, int value) {
-  t_node *node = create_node();
-  node->value = value;
+// insert_at_the_beginning() and insert_at_the_end();
+// or insert_beginning() and insert_end();
+// or insert_first() and insert_last();
+// or insert_head() and insert_tail();
+void insert_head(t_list list, int value) {
+  t_node* node = create_node(value);
   node->proximo = list->first;
   node->anterior = list->last;
 
@@ -47,65 +49,33 @@ void insert_to_head(t_list list, int value) {
   list->first = node;
 }
 
+t_node* remove_first(t_list list) {
+  t_node* node = list->first;
 
-void addNode(t_node *first, int value) {
-  t_node *n = malloc(sizeof(t_node));
-  n->value = value;
-  
-  n->proximo = first;
-  n->anterior = first->anterior;
+  list->first = node->next;
+  list->first->previous = node->previous;
+  node->previous->next = list->first;
 
-  first->anterior = n;
-  n->anterior->proximo = n;
+  return node;
 }
 
-void removeNode(t_node *first, int value) {
-  t_node *i = first;
-
-  while (i->value != value) {
-    i = i->proximo;
-  }
-
-  i->anterior->proximo = i->proximo;
-  i->proximo->anterior = i->anterior;
-  free(i);
+void delete_first(t_list list) {
+  t_node* removed = remove_first(list);
+  free(removed);
 }
 
-void showAll(t_node *first) {
-  t_node *i = first;
+void print_list(t_list* list) {
+  t_node *i = list->first->next;
 
-  while (i != first->anterior) {
-    printf("%d, ", i->value);
-    i = i->proximo;
+  printf("%d", list->first->value);
+  while (i != list->first) {
+    printf(", %d, ", i->value);
+    i = i->next;
   }
-
-  printf("%d\n", i->value);
+  printf(".\n", i->value);
 }
 
 int main() {
-  t_node *n1 = malloc(sizeof(t_node));
-  n1->value = 1;
-
-  t_node *n2 = malloc(sizeof(t_node));
-  n2->value = 4;
-
-  n1->proximo = n2;
-  n1->anterior = n2;
-  n2->proximo = n1;
-  n2->anterior = n1;
-
-  addNode(n1, -6);
-  addNode(n1, -13);
-  addNode(n1, 0);
-  addNode(n1, 2);
-  removeNode(n1, 4);
-
-  //printf("%d, %d, %d\n", n1->anterior->value, n1->value, n1->proximo->value);
-  showAll(n1);
-
-  /*free(n1->anterior);
-  free(n1);
-  free(n2);*/
   
   return 0;
 }
