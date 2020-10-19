@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* Single-Linked List */
+
 struct s_node {
   struct s_node *next;
   int value;
@@ -9,10 +11,14 @@ struct s_node {
 typedef struct s_node t_node;
 
 struct s_list {
-  t_node* first; // or head?
+  t_node* head;
+  t_node* tail;
+  int size;
 };
 
 typedef struct s_list t_list;
+
+/* ------- Protótipos ------- */
 
 t_list* create_empty_list();
 t_list* create_list(int*, int);
@@ -21,56 +27,28 @@ void _bind_head(t_list*, t_node*);
 void delete_first(t_list*);
 t_node* remove_first(t_list*);
 t_node* _create_node(int);
-int _is_empty(t_list*);
+
+/* --- Fim dos Protótipos --- */
+
+t_node* _create_node(int value) {
+  t_node* node;
+
+  node = malloc(sizeof(t_node));
+  node->next = NULL;
+  node->value = value;
+
+  return node;
+}
 
 t_list* create_empty_list() {
   t_list* list;
 
   list = malloc(sizeof(t_list));
-  list->first = NULL;
+  list->head = NULL;
+  list->tail = NULL;
+  list->size = 0;
   
   return list;
-}
-
-t_list* create_list(int* values, int quantity) {
-  t_list* list;
-  int i;
-
-  list = create_empty_list();
-  for (i = quantity - 1; i >= 0; i--) {
-    insert_head(list, values[i]);
-  }
-
-  return list;
-}
-
-void insert_head(t_list* list, int value) {
-  t_node* node;
-
-  node = _create_node(value);
-  _bind_head(list, node);
-}
-
-void _bind_head(t_list* list, t_node* node) {
-  node->next = list->first;
-  list->first = node;
-}
-
-t_node* remove_first(t_list* list) {
-  t_node* node;
-
-  node = list->first;
-  list->first = node->next;
-
-  return node;
-}
-
-void delete_first(t_list* list) {
-  t_node* removed;
-
-  removed = remove_first(list);
-
-  free(removed);
 }
 
 void print_list(t_list* list) {
@@ -84,19 +62,112 @@ void print_list(t_list* list) {
   printf("\n");
 }
 
-int _is_empty(t_list* list) {
-  if (list->first == NULL) return 1;
-  else return 0;
-}
-
-t_node* _create_node(int value) {
+void insert_head(t_list* list, int value) {
   t_node* node;
 
-  node = malloc(sizeof(t_node));
-  node->value = value;
-  node->next = NULL;
+  node = _create_node(value);
+  node->next = list->head;
+  list->head = node;
+  if (list->size == 0) {
+    list->tail = node;
+  }
+  list->size = list->size + 1;
+}
+
+void insert_tail(t_list* list, int value) {
+  t_node* node;
+
+  node = _create_node(value);
+  if (list->size == 0) {
+    list->head = node;
+  } else {
+    list->tail->next = node;
+  }
+  list->tail = node;
+  list->size = list->size + 1;
+}
+
+void insert_index(t_list* list, int value, int index) {
+  t_node* node;
+  t_node* iterator;
+  int i;
+
+  if (index = 0) {
+    insert_head(list, value);
+  } else if (index = list->size) {
+    insert_tail(list, value);
+  } else if (index > 0 && index < list->size) {
+    node = _create_node(value);
+    iterator = list->first;
+    i = 0;
+    while (i != index) {
+      iterator = iterator->next;
+      i = i + 1;
+    }
+    iterator->previous->next = node;
+    node->next = iterator;
+
+    list->size = list->size + 1;
+  }
+}
+
+t_list* create_list(int* values, int quantity) {
+  t_list* list;
+  int i;
+
+  list = create_empty_list();
+  for (i = 0; i < quantity; i++) {
+    insert_tail(list, values[i]);
+  }
+  
+  return list;
+}
+
+t_node* remove_first(t_list* list) {
+  t_node* node;
+
+  node = list->first;
+  if (list->size > 0) {
+    list->head = node->next;
+    if (list->size == 1) {
+      list->tail = NULL;
+    }
+    list->size = list->size - 1;
+  }
+  
+  return node;
+}
+
+void delete_first(t_list* list) {
+  t_node* removed;
+
+  removed = remove_first(list);
+
+  if (removed != NULL) {
+    free(removed);
+  }
+}
+
+t_node* remove_last(t_list* list) {
+  t_node* node;
+
+  node = list->last;
+  if (list->size > 0) {
+    // OPS, eu teria que iterar a lista até o penúltimo para atualizar list->tail
+    list->size = list->size - 1;
+  }
 
   return node;
+}
+
+void delete_last(t_list* list) {
+  t_node* removed;
+
+  removed = remove_last(list);
+
+  if (removed != NULL) {
+    free(removed);
+  }
 }
 
 int main() {
