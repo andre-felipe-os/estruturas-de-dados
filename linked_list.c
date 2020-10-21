@@ -28,6 +28,7 @@ void _bind_head(t_list*, t_node*);
 void delete_first(t_list*);
 t_node* remove_first(t_list*);
 t_node* _create_node(int);
+t_node* get_value(t_list*, int);
 
 /* --- Fim dos Protótipos --- */
 
@@ -157,7 +158,7 @@ t_node* remove_last(t_list* list) {
   if (list->size > 0) {
     if (list->size == 1) {
       list->head = NULL;
-      list->tail = NULL; // OP?
+      list->tail = NULL;
     } else {
       iterator = list->head;
       while (iterator->next != list->tail) {
@@ -182,6 +183,57 @@ void delete_last(t_list* list) {
   }
 }
 
+t_node* remove_index(t_list* list, int index) {
+  t_node* node;
+  t_node* auxiliar;
+
+  node = NULL;
+  if (index == 0) {
+    node = list->head;
+  } else if (index == list->size - 1) {
+    node = list->tail;
+  } else if (index > 0 && index < list->size - 1) {
+    auxiliar = get_value(list, index - 1);
+    node = auxiliar->next;
+    auxiliar->next = node->next;
+  }
+
+  return node;
+}
+
+void delete_index(t_list* list, int index) {
+  t_node* removed;
+
+  removed = remove_index(list, index);
+
+  if (removed != NULL) {
+    free(removed);
+  }
+}
+
+t_node* get_value(t_list* list, int index) {
+  t_node* iterator;
+  int i;
+
+  if (index < list->size && index >= 0) {
+    if (index == list->size - 1) {
+      return list->tail;
+    } else {
+      iterator = list->head;
+      i = 0;
+      
+      while (i != index) {
+	iterator = iterator->next;
+	i = i + 1;
+      }
+      
+      return iterator;
+    }
+  }
+  
+  return NULL;
+}
+
 int main() {
   int array[] = {1, 2, 3, 4, 5};
 
@@ -201,6 +253,18 @@ int main() {
   insert_head(list_0, 89);
   print_list(list_0);
   printf("LIST SIZE: %d\n", list_0->size);
+  int index = 6;
+  int index2 = 4;
+  t_node* node101 = get_value(list_0, index);
+  int value = node101->value;
+  printf("Index %d, value %d\n", index, value);
+  printf("Index %d, value %d\n", index2, get_value(list_0, index2)->value);
+
+  t_node* node202 = remove_index(list_0, 2);
+  printf("removido %d\n", node202->value);
+  print_list(list_0);
+  delete_index(list_0, 4);
+  print_list(list_0);
   
   return 0;
 }
