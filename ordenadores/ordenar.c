@@ -1,5 +1,5 @@
-#include "ordenadores.h"
-
+//#include "ordenadores.h"
+#include "bubble.c"
 #include <stdio.h>
 
 int main() {
@@ -14,7 +14,7 @@ int main() {
     scanf("%d", &valores[i]);
   }
 
-  merge_sort(valores, quantidade);
+  bubble_sort(valores, quantidade);
 
   for (i = 0; i < quantidade; i++) {
     printf("%d\n", valores[i]);
