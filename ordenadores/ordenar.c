@@ -1,5 +1,5 @@
 //#include "ordenadores.h"
-#include "select.c"
+#include "insertion.c"
 #include <stdio.h>
 
 int main() {
@@ -14,7 +14,7 @@ int main() {
     scanf("%d", &valores[i]);
   }
 
-  select_sort(valores, quantidade);
+  insertion_sort(valores, quantidade);
 
   for (i = 0; i < quantidade; i++) {
     printf("%d\n", valores[i]);
